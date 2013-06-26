@@ -7,21 +7,22 @@ let s:source = {
       \ 'is_volatile' : 1,
       \ }
 
-function! s:source.get_keyword_list(cur_keyword_str)
-  if !(neocomplcache#is_text_mode() || neocomplcache#within_comment())
-        \ || a:cur_keyword_str !~ '^[[:alpha:]]\+$'
+function! s:source.gather_candidates(context)
+  if !(neocomplete#is_text_mode() || neocomplete#within_comment())
+        \ || a:context.complete_str !~ '^[[:alpha:]]\+$'
     return []
   endif
-  let list = split(neocomplcache#util#system(
-        \ 'look ' . a:cur_keyword_str .
+
+  let list = split(neocomplete#util#system(
+        \ 'look ' . a:context.complete_str .
         \ '| head -n ' . self.max_candidates), "\n")
-  if neocomplcache#util#get_last_status()
+  if neocomplete#util#get_last_status()
     return []
   endif
 
   return list
 endfunction
 
-function! neocomplcache#sources#look#define()
+function! neocomplete#sources#look#define()
   return executable('look') ? s:source : {}
 endfunction
